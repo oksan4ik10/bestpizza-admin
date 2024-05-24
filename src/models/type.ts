@@ -87,3 +87,12 @@ export interface IGkAPI {
     id: number;
     name: string;
 }
+export interface ILoginAPI {
+    username: string;
+    password: string
+}
+export interface IUser {
+    email: string;
+    name: string;
+    isAdmin?: boolean;
+}

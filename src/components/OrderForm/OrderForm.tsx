@@ -63,7 +63,6 @@ function OrderForm(props: IProps) {
             if (id) {
                 const docRef = doc(db, "orders", id);
                 await setDoc(docRef, obj, { merge: true });
-                // const data = await funcRequest({ id: id, body: formData })
                 navigate(`/`)
             }
         } catch (err) {

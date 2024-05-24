@@ -1,11 +1,26 @@
+import { useNavigate } from "react-router-dom";
+import { useAppSelector, useAppDispatch } from "../../store/store";
+import { resetUser } from "../../store/reducers/userReducer";
+
+
 import "./PagesHead.css"
-import urlPhoto from "../../assets/images/test-davdamer.png";
+
 interface IProps {
     title: string;
 }
+
 function Pages(props: IProps) {
 
     const { title } = props;
+    const user = useAppSelector((store) => store.userReducer).user.name.split(" ");
+
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch()
+    const logout = () => {
+        dispatch(resetUser())
+        localStorage.removeItem("tokenAuth")
+        navigate("/login", { replace: true })
+    }
 
     return (
         <>
@@ -14,11 +29,11 @@ function Pages(props: IProps) {
                     <h2 className="page__title">{title}</h2>
                     <div className="page__name">
                         <div className="page__info">
-                            <span>Констанипольский</span>
-                            <span>Богдан Иванович</span>
+                            <span>{user[0]}</span>
+                            <span>{user[1]}</span>
                         </div>
-                        <div className="page__img">
-                            <img src={urlPhoto} alt="photo" />
+                        <div className="btn btn__active btn__table" onClick={logout}>
+                            Выход
                         </div>
                     </div>
                 </div>

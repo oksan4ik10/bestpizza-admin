@@ -1,8 +1,11 @@
 import { NavLink, Outlet } from "react-router-dom"
 import "./Layout.css";
+import { useAppSelector } from "../../store/store";
 import urlLogo from "../../assets/images/logo.png";
 function LayoutMenu() {
+    const isAuth = useAppSelector((store) => store.userReducer).isAuth;
 
+    if (location.pathname === "/login" || !isAuth) return <Outlet />
 
     return (
         <>
