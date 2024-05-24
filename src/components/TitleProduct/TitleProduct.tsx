@@ -31,7 +31,7 @@ function TitleProduct(props: IProps) {
         <div onClick={clickProduct} className={"col " + className + " " + style.col + " " + (images.length === 0 ? style.default : (images.length > 1 && active) ? style.active : "")}>
             <div className={style.col__images}>
                 <img src={images} alt="img" />
-                {images.length > 1 && <div className={style.count_img}><span>+{images.length - 1}</span></div>}
+
             </div>
             <div className={style.titles}>
                 <ClampLines text={title} lines={2} className={style.title} ellipsis="" id="custom" buttons={false} />

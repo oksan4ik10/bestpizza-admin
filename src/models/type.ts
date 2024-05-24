@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface IDavdamer {
     id: number;
     name: string;
@@ -51,26 +53,18 @@ export interface IOrder {
     pay: "cash" | "card",
     uid: string,
     order: ICart[],
-    date: Date,
+    date: Timestamp,
     id: string,
     totalPrice: number
 
 }
 
-export interface IOrderInfo extends IOrder {
-    lines: {
-        product: IProduct,
-        quantity: number,
-        unit_price_incl_tax: string,
-        measurement: string,
-    }[]
-}
+
 interface IStatusOrder {
     [key: string]: string
 }
 export const statusOrder: IStatusOrder = {
     NEW: "Заказ оформлен",
-    PAID: "Заказ оплачен",
     PROCESSING: "Сборка заказа",
     SENT: "Курьер в пути",
     DELIVERED: "Заказ выдан",

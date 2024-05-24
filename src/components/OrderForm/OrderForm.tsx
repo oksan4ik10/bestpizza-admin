@@ -3,6 +3,8 @@ import moment from "moment";
 import { useEffect, useRef, useState } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 import style from "./OrderForm.module.css"
 
@@ -11,59 +13,58 @@ import urlIconDelivery from "../../assets/images/deliveryIcon.svg"
 import urlIconComment from "../../assets/images/commentIcon.svg"
 import urlIconCart from "../../assets/images/cartIcon.svg"
 import urlIconPay from "../../assets/images/payIcon.svg"
-import { IOrderInfo } from "../../models/type";
+import { IOrder } from "../../models/type";
 
 import TitleProduct from "../TitleProduct/TitleProduct";
 import Filter from "../Filter/Filter";
 
 import { statusOrder } from "../../models/type";
-import { davDamerAPI } from "../../store/api/DavdamerAPI";
+
+
 
 
 interface IProps {
     edit: boolean,
-    data: IOrderInfo
+    data: IOrder,
     id?: string | null,
     refBtn: any,
-    funcRequest?: any,
     sendFormFilters: boolean
 }
 
 
 
 function OrderForm(props: IProps) {
-    const { sendFormFilters, edit, data, id, refBtn, funcRequest } = props;
+    const { edit, data, id, refBtn } = props;
     const { register, handleSubmit, formState: { errors } } = useForm<any>({
         defaultValues: {
-            line1: data.shipping_address.line1 ? data.shipping_address.line1 : "Не заполнено",
+            address: data.address ? data.address : "Не заполнено",
 
         }
     })
 
-    console.log(data);
 
 
 
     const navigate = useNavigate();
     const onSubmit: SubmitHandler<any> = async (dataParam) => {
-        if (!valueDistrict) return
-        const formData = new FormData();
+
         const obj: any = {};
         for (const key in dataParam) {
             if (dataParam[key]) obj[key]
                 = dataParam[key]
         }
-        obj["notes"] = desc;
-        obj["date"] = filterDate;
-        obj["district"] = valueDistrict;
-        formData.append("shipping_address", JSON.stringify(obj));
-        formData.append("status", valueFilter);
+        obj["decsription"] = desc;
+
+        obj["status"] = valueFilter;
+
 
 
         try {
-            if (funcRequest) {
-                const data = await funcRequest({ id: id, body: formData })
-                if (data) navigate(`/orders`)
+            if (id) {
+                const docRef = doc(db, "orders", id);
+                await setDoc(docRef, obj, { merge: true });
+                // const data = await funcRequest({ id: id, body: formData })
+                navigate(`/`)
             }
         } catch (err) {
             navigate(`/404`)
@@ -71,7 +72,7 @@ function OrderForm(props: IProps) {
         }
 
     }
-    const [desc, setDesc] = useState(data.shipping_address.notes ? data.shipping_address.notes : edit ? "" : "(пусто)");
+    const [desc, setDesc] = useState(data.comment ? data.comment : edit ? "" : "(пусто)");
     const changeDesc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setDesc(e.target.value);
     }
@@ -112,7 +113,7 @@ function OrderForm(props: IProps) {
     }
     const [statusFilter, setStatusFilter] = useState<any[]>([]);
     const filterStatus = {
-        title: data.statusName ? data.statusName : "",
+        title: data.status ? statusOrder[data.status.toUpperCase()] : "",
         nameFilter: "status",
         status: statusFilter,
         id: true
@@ -130,36 +131,8 @@ function OrderForm(props: IProps) {
         setStatusFilter(arr)
     }, [])
 
-    const stateDateFilter = {
-        title: data.shipping_address.date ? moment(data.shipping_address.date).format("DD.MM.YYYY") : edit ? "Выберите дату" : "Не заполнено",
-        nameFilter: "date",
-        type: "date",
-        date: [],
-        dateValue: data.shipping_address.date ? data.shipping_address.date : "",
-        minNowDate: true
-
-    }
-
-    const [filterDate, setFilterDate] = useState<Date>();
-    const setParamsFilterDate = (_: string, value: string) => {
-        setFilterDate(value as any)
-    }
 
 
-    const { data: districts, error: districtsError } = davDamerAPI.useFetchGetGKQuery();
-
-    const [valueDistrict, setValueDistrict] = useState(data.shipping_address.district);
-    const filterDistrict = {
-        title: data.shipping_address.district ? data.shipping_address.district : "Выберите ЖК",
-        nameFilter: "district",
-        district: districts ? districts.map((item) => item.name) : [],
-    };
-
-    const changeFilterDistrict = (_: string, value: string) => {
-        setValueDistrict(value ? value : data.shipping_address.district)
-    }
-
-    if (districtsError) return <h1>Ошибка</h1>
 
 
     return (
@@ -169,14 +142,14 @@ function OrderForm(props: IProps) {
                     <div className={"form__name " + style.form__name}>
                         <div className={style.form__orderTitle}>
                             <p>Номер заказа: </p>
-                            <p>{data.number}</p>
+                            <p>{data.id}</p>
 
                         </div>
-                        {data && data.date_placed && <span>Дата заказа: {moment(data.date_placed).format("DD.MM.YYYY")}</span>}
-                        {data && data.updated_dt && <span>Дата изменения: {moment(data.updated_dt).format("DD.MM.YYYY")}</span>}
+                        {data && data.date && <span>Дата заказа: {moment((data.date as any) * 1000).format("DD.MM")}.2024</span>}
+
                     </div>
                     {!edit && <div className={style.status}>
-                        {data.statusName}
+                        {filterStatus.title}
                     </div>}
                     {edit && <Filter data={filterStatus as any} setParamsFilter={setParamsFilter}></Filter>}
                 </div>
@@ -184,17 +157,12 @@ function OrderForm(props: IProps) {
                     <h3 className="form__title"><img src={urlIconClient} alt="desc" />О клиенте</h3>
 
                     <label className="form__label">
-                        <span>ID клиента</span>
-                        <input defaultValue={data.user.id} type="text" disabled />
-                    </label>
-
-                    <label className="form__label">
-                        <span>ФИО</span>
-                        <input defaultValue={`${data.shipping_address.last_name} ${data.shipping_address.first_name}`} type="text" disabled />
+                        <span>Имя</span>
+                        <input defaultValue={`${data.name}`} type="text" disabled />
                     </label>
                     <label className="form__label">
                         <span>Телефон</span>
-                        <input defaultValue={data.shipping_address.phone_number} type="text" disabled />
+                        <input defaultValue={data.phone} type="text" disabled />
                     </label>
 
 
@@ -202,33 +170,14 @@ function OrderForm(props: IProps) {
                 <div className={style.form__delivery} ref={refDelivery}>
                     <h3 className="form__title"><img src={urlIconDelivery} alt="desc" />Доставка</h3>
 
-                    <div className={"form__label" + " " + (valueDistrict ? "value" : "")}>
-                        <span>Жилищный комплекс</span>
-                        {!edit && data && <input defaultValue={valueDistrict ? valueDistrict : "Не задан"} type="text" disabled />}
-                        {edit && <Filter data={filterDistrict as any} setParamsFilter={changeFilterDistrict}></Filter>}
-
-                        {sendFormFilters && edit && !valueDistrict && <span className="form__error">Выберите ЖК</span>}
-                    </div>
 
                     <label className="form__label">
                         <span>Адрес</span>
-                        <input placeholder="Заполните адрес клиента" type="text"  {...register("line1", { validate: (value) => ((value.length > 10) && (value.length < 150)), disabled: edit ? false : true })} />
+                        <input placeholder="Заполните адрес клиента" type="text"  {...register("address", { validate: (value) => ((value.length > 10) && (value.length < 150)), disabled: edit ? false : true })} />
 
                         {errors.line1 && <span className="form__error">Длина строки от 10 до 150 символов</span>}
                     </label>
-                    <label className="form__label">
-                        <span>Способ доставки</span>
-                        <input defaultValue={data.shipping_method} type="text" disabled />
-                    </label>
-                    <div className={"form__label" + " " + (stateDateFilter.title ? "value" : "")}>
-                        <span>Дата доставки</span>
-                        {!edit && <input defaultValue={stateDateFilter.title} type="text" disabled />}
-                        {edit && <Filter data={stateDateFilter as any} setParamsFilter={setParamsFilterDate}></Filter>}
-                    </div>
-                    <label className="form__label" key={Math.random()}>
-                        <span>Время доставки</span>
-                        <input defaultValue={data.shipping_address.time ? data.shipping_address.time : edit ? "" : "Не заполнено"} placeholder="Заполните время доставки" type="text"  {...register("time", { disabled: edit ? false : true })} />
-                    </label>
+
 
 
                 </div>
@@ -246,27 +195,27 @@ function OrderForm(props: IProps) {
                 <div className={style.form__pay}>
                     <h3 className="form__title"><img src={urlIconPay} alt="pay" />Оплата</h3>
                     <label className="form__label">
-                        <span>{data.total_incl_tax} ₽</span>
-                        <input defaultValue={`${data.lines.length} ${declOfNum(data.lines.length)}`} type="text" disabled />
+                        <span>{data.totalPrice} ₽</span>
+                        <input defaultValue={`${data.order.length} ${declOfNum(data.order.length)}`} type="text" disabled />
                     </label>
                     <label className="form__label">
                         <span>Способ оплаты</span>
-                        <input defaultValue={"Кредитная карта"} type="text" disabled />
+                        <input defaultValue={data.pay === "card" ? "Картой курьеру" : "Наличными"} type="text" disabled />
                     </label>
                 </div>
                 <div className={style.form__cart + " "}>
                     <h3 className="form__title"><img src={urlIconCart} alt="cart" />Детали заказа</h3>
                     <div className={style.order + " " + (isScroll ? "scroll__elem" : "")} ref={refOrder}>
 
-                        {data.lines.map((item, index) => <div key={index} className={style.infoOrder}>
+                        {data.order.map((item, index) => <div key={index} className={style.infoOrder}>
 
-                            <TitleProduct active={true} categories={item.product.categories} images={item.product.images} title={item.product.title} ></TitleProduct>
-                            <p className={style.infoPace}> {item.product.location ? item.product.location : "Не заполнено"}</p>
+                            <TitleProduct active={true} categories={item.id} images={item.img} title={item.name} ></TitleProduct>
+
 
 
                             <div className={style.infoCount}>
-                                <span>x {item.quantity} </span>
-                                <span>{item.unit_price_incl_tax} ₽ / {item.measurement ? item.measurement : "шт."}</span>
+                                <span>x {item.count} </span>
+                                <span>{item.price} ₽ / шт.</span>
                             </div>
                         </div>
                         )}

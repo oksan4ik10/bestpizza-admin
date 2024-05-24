@@ -133,7 +133,6 @@ function TablePage(props: IProps) {
 
 
 
-
     return (
         <div onClick={clickTable} className={styles.table}>
             {idDelProduct && <ModalDeleteProduct id={idDelProduct} closeModal={closeModal}></ModalDeleteProduct>}
@@ -198,13 +197,15 @@ function TablePage(props: IProps) {
                         })}
 
                         {orders && orders.length > 0 && orders.map((item, index) => {
+
                             return <div className={"row " + style.row} onClick={() => clickRow(index)} key={item.id}>
                                 <div className={"row__bg " + ((arrRowActive && arrRowActive[index]) ? "active" : "")}></div>
                                 <div className={"col " + style.col}>{item.id}</div>
                                 <div className={"col " + style.col}>
+
                                     {item.date && <>
-                                        <span>{moment(item.date).format("DD.MM.YYYY")}</span>
-                                        <span>{moment(item.date).format("HH:mm")}</span>
+                                        <span>{moment.unix(item.date as any).format("DD.MM")}.2024</span>
+                                        <span>{moment((item.date as any) * 1000).format("HH:mm")}</span>
                                     </>
                                     }
                                     {!item.date && <>
@@ -216,7 +217,7 @@ function TablePage(props: IProps) {
                                 </div>
 
                                 <div className={"col " + style.col} style={{ background: statusOrderColor[item.status.toUpperCase()] }}>{statusOrder[item.status.toUpperCase()]}</div>
-                                <div className={"col " + style.col}>{item.uid.slice(0, 17)}</div>
+                                <div className={"col " + style.col}>{item.uid}</div>
                                 <div className={"col " + style.col}>{(item.totalPrice ? item.totalPrice : 1970) + " ₽"}</div>
                                 <div className={"col " + style.col}>
                                     <Link to={`/orders/${item.id}`} className="btn btn__table">

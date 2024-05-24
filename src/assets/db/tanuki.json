@@ -10,28 +10,28 @@
     "id": "tn02",
     "name": "ФИЛАДЕЛЬФИЯ СМОУК",
     "description": "Лосось копченый, курица копченая, омлет, огурец, авокадо, сыр, микс соусов, 6 шт.",
-    "price": 455,
+    "price": 590,
     "image": "https://i.ibb.co/8MYgxWD/smoke.jpg"
   },
   {
     "id": "tn03",
     "name": "ФИЛАДЕЛЬФИЯ ФРЕШ",
     "description": "Лосось, авокадо, огурец, сыр, омлет, тобико, микс соусов",
-    "price": 455,
+    "price": 480,
     "image": "https://i.ibb.co/WsQR8Tc/fresh.jpg"
   },
   {
     "id": "tn04",
     "name": "КАЛИФОРНИЯ АЖИ",
     "description": "Лосось, авокадо, краб-микс, сыр, соус «Ажи-маракуйя», тобико, кунжут, 6 шт.",
-    "price": 455,
+    "price": 510,
     "image": "https://i.ibb.co/v3M9ngD/azhi.jpg"
   },
   {
     "id": "tn05",
     "name": "КАЛИФОРНИЯ БЛЭК",
     "description": "Креветка, краб-микс, сыр, тобико, микс соусов, кунжут, 6 шт.",
-    "price": 455,
+    "price": 475,
     "image": "https://i.ibb.co/L1S1Gkj/black.jpg"
   },
   {
