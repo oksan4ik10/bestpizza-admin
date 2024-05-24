@@ -1,11 +1,11 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom'
 
-import { davDamerAPI } from "../../../store/api/DavdamerAPI";
-import ErrorPages from '../../Error/ErrorPages';
+import { dataProducts } from '../ProductsPageMain/ProductsPage';
 
 import CreateHead from '../../../components/CreateHead/CreateHead';
 import ProductForm from '../../../components/ProductForm/ProductForm';
+import { IProduct } from '../../../models/type';
 
 interface IProps {
     edit: boolean;
@@ -14,8 +14,9 @@ interface IProps {
 function ProductsShowEdit(props: IProps) {
     const { id } = useParams();
     const { edit, nameFunc } = props;
-    const { data, error, isLoading } = davDamerAPI.useFetchGetProductQuery(id ? id : "-2");
-    const [editSeller, { isError: editError }] = davDamerAPI.useFetchEditProductMutation();
+    const [data, setData] = useState<IProduct>()
+
+
 
     const btnSubmitRef = useRef<HTMLInputElement>(null)
     const [sendFormFilters, setSendFormFilters] = useState(false);
@@ -24,14 +25,15 @@ function ProductsShowEdit(props: IProps) {
         if (btnSubmitRef.current) { btnSubmitRef.current.click() }
         setSendFormFilters(true)
     }
-    if (isLoading) return (<h2>Загрузка данных</h2>)
-    if (error || editError) return (<ErrorPages></ErrorPages>)
+    useEffect(() => {
+        setData(dataProducts.find((item) => item.id === id))
+    }, [])
 
 
     return (
         <>
             <CreateHead title="Карточка товара" redirect={false} nameFunc={nameFunc} saveFunc={clickSave} namePage="products" />
-            <ProductForm sendFormFilters={sendFormFilters} funcRequest={editSeller} data={data} edit={edit} refBtn={btnSubmitRef} id={id} ></ProductForm>
+            {data && <ProductForm sendFormFilters={sendFormFilters} data={data} edit={edit} refBtn={btnSubmitRef} id={id} ></ProductForm>}
         </>
     )
 }

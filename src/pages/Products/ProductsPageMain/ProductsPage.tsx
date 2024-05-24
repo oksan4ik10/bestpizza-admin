@@ -10,14 +10,14 @@ import dataPizzaBurger from "../../../assets/db/pizza-burger.json"
 import dataPizzaPlus from "../../../assets/db/pizza-plus.json"
 import dataTanuki from "../../../assets/db/tanuki.json"
 
-
+export const dataProducts = [...dataPizzaPlus, ...dataTanuki, ...dataFood, ...dataPalki, ...dataGusi, ...dataPizzaBurger];
 
 function ProductsPage() {
 
-    const data = [...dataPizzaPlus, ...dataTanuki, ...dataFood, ...dataPalki, ...dataGusi, ...dataPizzaBurger];
+
 
     return (
-        <TablePage style={style} nameTable="products" products={data} lengthRow={data.length}></TablePage>)
+        <TablePage style={style} nameTable="products" products={dataProducts} lengthRow={dataProducts.length}></TablePage>)
 }
 
 export default ProductsPage
