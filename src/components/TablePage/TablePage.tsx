@@ -217,7 +217,7 @@ function TablePage(props: IProps) {
                                 </div>
 
                                 <div className={"col " + style.col} style={{ background: statusOrderColor[item.status.toUpperCase()] }}>{statusOrder[item.status.toUpperCase()]}</div>
-                                <div className={"col " + style.col}>{item.uid}</div>
+                                <div className={"col " + style.col}>{item.uid.slice(0, 10)}</div>
                                 <div className={"col " + style.col}>{(item.totalPrice ? item.totalPrice : 1970) + " ₽"}</div>
                                 <div className={"col " + style.col}>
                                     <Link to={`/orders/${item.id}`} className="btn btn__table">

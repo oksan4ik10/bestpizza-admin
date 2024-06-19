@@ -31,6 +31,7 @@ const router = createBrowserRouter(
       <Route path="products/edit/:id" element={<RequireAuth><ProductsShowEdit edit={true} nameFunc="save" /></RequireAuth>}></Route>
 
       <Route index element={<RequireAuth><OrdersPage /></RequireAuth>}></Route>
+      <Route path="orders" element={<RequireAuth><OrdersPage /></RequireAuth>}></Route>
       <Route path="orders/:id" element={<RequireAuth><OrdersShowEdit edit={false} nameFunc="show" /></RequireAuth>}></Route>
       <Route path="orders/edit/:id" element={<RequireAuth><OrdersShowEdit edit={true} nameFunc="save" /></RequireAuth>}></Route>
 

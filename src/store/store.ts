@@ -1,21 +1,17 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { davDamerAPI } from './api/DavdamerAPI'
 import userReducer from './reducers/userReducer';
 
 
 
 const rootReducer = combineReducers({
-    [davDamerAPI.reducerPath]: davDamerAPI.reducer,
     userReducer
 });
 
 export const setupStore = () => {
     return configureStore({
         reducer: rootReducer,
-        middleware: (getDefaultMiddleware) =>
-            getDefaultMiddleware()
-                .concat(davDamerAPI.middleware)
+
     });
 };
 

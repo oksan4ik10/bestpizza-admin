@@ -35,7 +35,6 @@ const LoginPage = () => {
     const auth = getAuth();
 
 
-
     // !Qq345678 efimov2024@gmail.ru
 
     const funcSubmit = async (auth: Auth, email: string, password?: string) => {
